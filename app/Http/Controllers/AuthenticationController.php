@@ -11,32 +11,49 @@ use Illuminate\Validation\ValidationException;
 class AuthenticationController extends Controller
 {
     //
+
     public function login(Request $request) {
+
+
+        $user = User::where('email', $request->email)->first();
+
+        $email = $request->email;
+
 
         $request->validate([
             'email' => 'required',
             'password' => 'required'
         ]);
 
-        $user = User::where('email', $request->email)->first();
-
-        if(Auth::attempt(['email' => $request->email, 'password'=>$request->password], true)) {
-
-            $token = md5($request->email);
-
-            $user->setRememberToken($token);
-
-            return response()->json([
-                "message" => "Login Successfull!",
-                "token" => $token
-            ]);
-
-        } else {
+        if(!$user ||  ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
-                "message" => "The provided credentials are incorrect"
+                "email" => ['The provided credenetials are incorrect.']
             ]);
         }
 
+
+        $currentToken = $user->tokens->first();
+
+        if($currentToken) {
+            return \response()->json([
+                "message" => "Kamu Sudah Login!",
+                "token" => \md5($email)
+            ]);
+        }
+
+        return response()->json([
+            "message" => "Berhasil Login!",
+            "token" => $user->createToken($email)->plainTextToken
+        ], 200);
+
+    }
+
+
+    public function logout(Request $request){
+        $request->user()->currentAccessToken()->delete();
+        return response()->json([
+            "message" => 'Logout Berhasiil!'
+        ], 200);
     }
 
 }
