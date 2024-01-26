@@ -22,8 +22,8 @@ class DestinationFactory extends Factory
     {
         return [
             //
-            'imageId' => \random_int(1,10),
-            'destinationName' => fake()->city(),
+            'imageId' => \random_int(1, 10),
+            'destinationName' => fake()->sentence(3),
             'description' => fake()->sentence(20),
             'location' => fake()->address()
         ];
