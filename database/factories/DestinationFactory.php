@@ -25,7 +25,9 @@ class DestinationFactory extends Factory
             'imageId' => \random_int(1, 10),
             'destinationName' => fake()->sentence(3),
             'description' => fake()->sentence(20),
-            'location' => fake()->address()
+            'location' => fake()->address(),
+            'created_at' => now(),
+            'updated_at' => null
         ];
     }
 }

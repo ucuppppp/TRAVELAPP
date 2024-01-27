@@ -14,14 +14,14 @@ class DestinationResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
 
         return [
             'nama_destinasi' => $this->destinationName,
-            'image' => $this->whenLoaded('imageId'),
+            'image' => $this->image,
             'deskripsi' => $this->description,
-            'lokasi' => $this->location
+            'lokasi' => $this->location,
+            'dibuat_pada' => $this->created_at,
+            'diedit_pada' => $this->updated_at
         ];
-
     }
 }

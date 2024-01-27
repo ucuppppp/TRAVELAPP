@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('destinations', function (Blueprint $table) {
             $table->id('destinationId');
-            $table->foreignId('imageId');
+            $table->string('image');
             $table->string('destinationName')->unique();
             $table->text('description');
             $table->string('location');
+            $table->timestamp('created_at')->nullable();
+            $table->timestamp('updated_at')->nullable();
         });
     }
 

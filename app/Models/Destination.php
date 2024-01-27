@@ -12,11 +12,14 @@ class Destination extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['imageId','destinationName', 'description', 'location'];
+
+    protected $primaryKey = 'destinationId';
+
+    protected $fillable = ['imageId', 'destinationName', 'description', 'location'];
 
 
-        public function images(): BelongsTo
-        {
-            return $this->belongsTo(ImageDestination::class, 'imageId', 'imageId');
-        }
+    public function images(): BelongsTo
+    {
+        return $this->belongsTo(ImageDestination::class, 'imageId', 'imageId');
+    }
 }

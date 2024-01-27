@@ -14,30 +14,85 @@ class DestinationController extends Controller
 
     public function index()
     {
-        $perPage = 10;
-        $destinations = Destination::paginate($perPage);
 
-        if (count($destinations->items()) == 0) {
-            return response()->json(['error' => 'Data not found'], 404);
+        $destinations = Destination::all();
+
+
+        return DestinationResource::collection($destinations);
+    }
+
+    public function show($id)
+    {
+        $destination = Destination::with('images:imageId,fileName,filePath')->where('destinationId', $id)->first();
+        if (!$destination) {
+            return \abort(404);
+        }
+        return new DestinationResource($destination);
+    }
+
+
+    public function store(Request $request)
+    {
+
+        $validated = $request->validate([
+            "destinationName" => "required",
+            "description" => "required",
+            "location" => "required"
+        ]);
+
+        if ($request->file('image')) {
+            dd($request->file());
         }
 
-        $destinations->loadMissing(['images:imageId,fileName,filePath']);
+        dd($validated);
 
-        return response()->json([
-            'data' => $destinations
+        $destination = Destination::create($request->all());
+
+        return new DestinationResource([
+            "message" => "Berhasil Menambahkan Data!",
+            "data" => $destination
         ]);
     }
 
-    public function show($id){
-        $destination = Destination::with('images:imageId,fileName,filePath')->where('destinationId', $id)->first();
-        if(!$destination) {
-            return \abort(404);
+
+    public function update(Request $request, $id)
+    {
+
+
+        $dataDestination = Destination::findOrFail($id);
+        if (!$dataDestination) {
+            return abort(404);
         }
-        return new DestinationResource($destination->loadMissing(['images:imageId,fileName,filePath']));
+
+        $dataDestination->update($request->all());
+
+        return new DestinationResource([
+            "message" => "Berhasil Update!",
+            "data" => $dataDestination
+        ]);
     }
 
+    public function destroy($id)
+    {
+        $dataDestination = Destination::findOrFail($id);
+        if (!$dataDestination) {
+            return abort(404);
+        }
+        $dataBefore = $dataDestination;
+        $dataDestination->delete();
+        return response()->json([
+            "message" => "Data Berhasil DiHapus",
+            "dataYangTerhapus" => $dataBefore
+        ]);
+    }
 
+    public function query($query)
+    {
+        $destination = Destination::where('destinationName', 'like', '%' . $query . '%')
+            ->orWhere('description', 'like', '%' . $query . '%')
+            ->orWhere('location', 'like', '%' . $query . '%')
+            ->get();
 
-
-
+        return DestinationResource::collection($destination);
+    }
 }

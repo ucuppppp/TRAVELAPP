@@ -21,16 +21,19 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::middleware(['auth:sanctum'])->group(function () {
-
-    Route::get('/destinations', [DestinationController::class, 'index']);
     Route::post('/logout', [AuthenticationController::class, 'logout']);
     Route::post('/destination', [DestinationController::class, 'store']);
+    Route::patch('/destination/{id}', [DestinationController::class, 'update']);
+    Route::delete('/destination/{id}', [DestinationController::class, 'destroy']);
 });
 
 
 
 Route::post('/login', [AuthenticationController::class, 'login']);
-// Route::get('/destinations', [DestinationController::class, 'indexPaginate']);
+// Destination
+Route::get('/destinations', [DestinationController::class, 'index']);
 Route::get('/destination/{id}', [DestinationController::class, 'show']);
+Route::get('/destination/search/query={query}', [DestinationController::class, 'query']);
+// Travel Package
 Route::get('/travel-packages', [TravelPackageController::class, 'index']);
 Route::get('/travel-package/{id}', [TravelPackageController::class, 'show']);
