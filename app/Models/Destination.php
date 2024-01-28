@@ -15,11 +15,5 @@ class Destination extends Model
 
     protected $primaryKey = 'destinationId';
 
-    protected $fillable = ['imageId', 'destinationName', 'description', 'location'];
-
-
-    public function images(): BelongsTo
-    {
-        return $this->belongsTo(ImageDestination::class, 'imageId', 'imageId');
-    }
+    protected $fillable = ['image', 'destinationName', 'description', 'location'];
 }

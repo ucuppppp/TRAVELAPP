@@ -33,27 +33,42 @@ class DestinationController extends Controller
 
     public function store(Request $request)
     {
-
         $validated = $request->validate([
             "destinationName" => "required",
             "description" => "required",
-            "location" => "required"
+            "location" => "required",
+            "image" => "image|mimes:jpeg,png,jpg,gif,svg|max:2048"
         ]);
 
+        // Cek apakah gambar diunggah
         if ($request->file('image')) {
-            dd($request->file());
+            // Generate nama unik untuk file gambar
+            $imageName = time() . '_' . uniqid() . '.' . $request->file('image')->getClientOriginalExtension();
+
+            // Simpan gambar ke dalam storage
+            $imagePath = $request->file('image')->storeAs('destination-img', $imageName, 'public');
+
+            // Set URL gambar lengkap
+            $validated['image'] = url("storage/{$imagePath}");
         }
 
-        dd($validated);
+        // Periksa apakah destinasi sudah ada
+        $existingDestination = Destination::where('destinationName', $request->input('destinationName'))->first();
 
-        $destination = Destination::create($request->all());
+        if ($existingDestination) {
+            return response()->json([
+                "message" => "Data destinasi sudah ada!"
+            ]);
+        }
 
-        return new DestinationResource([
+        // Buat destinasi baru
+        $destination = Destination::create($validated);
+
+        return response()->json([
             "message" => "Berhasil Menambahkan Data!",
             "data" => $destination
         ]);
     }
-
 
     public function update(Request $request, $id)
     {
